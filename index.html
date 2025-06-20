@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login / Signup Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f7f7f7;
+    }
+
+    .form-container {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    .form-switch {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .form-switch button {
+      margin: 5px;
+    }
+
+    .link {
+      color: blue;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9em;
+    }
+
+    #message {
+      color: green;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-switch">
+    <button onclick="showForm('signup')">Sign Up</button>
+    <button onclick="showForm('login')">Login</button>
+  </div>
+
+  <div class="form-container">
+    <!-- Signup Form -->
+    <form id="signup-form">
+      <h2>Sign Up</h2>
+      <label>Full Name:</label>
+      <input type="text" id="signup-name" required />
+
+      <label>Email:</label>
+      <input type="email" id="signup-email" required />
+
+      <label>Password:</label>
+      <input type="password" id="signup-password" required />
+
+      <button type="submit">Register</button>
+    </form>
+    
+<div id="message"></div>
+
+<script>
+  function signup(e) {
+    e.preventDefault();
+
+    // Save to localStorage (optional)
+    const name = document.getElementById("signup-name").value;
+    const email = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+    localStorage.setItem("user", JSON.stringify({ name, email, password }));
+
+    // Send confirmation email
+    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+      user_name: name,
+      user_email: email,
+    }).then(() => {
+      document.getElementById("message").innerHTML = 
+        ✅ Successfully registered! A confirmation email has been sent.<br>
+        <a href="login.html">Login to your account</a>
+      ;
+    }, (err) => {
+      document.getElementById("message").innerHTML = "❌ Error sending email. Try again.";
+      console.error(err);
+    });
+  }
+</script>
+
+    <!-- Login Form -->
+    <form id="login-form" class="hidden">
+      <h2>Login</h2>
+      <label>Email:</label>
+      <input type="email" id="login-email" required />
+
+      <label>Password:</label>
+      <input type="password" id="login-password" required />
+
+      <button type="submit">Login</button>
+      <h2><!--forgot password--></h2>
+      <span class="link" onclick="resetPassword()">Forgot Password?</span><br><br>
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <script>
+    function showForm(type) {
+      document.getElementById("signup-form").classList.toggle("hidden", type !== "signup");
+      document.getElementById("login-form").classList.toggle("hidden", type !== "login");
+      document.getElementById("message").textContent = "";
+    }
+
+    // Handle signup (only localStorage for now)
+    document.getElementById("signup-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("signup-name").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      localStorage.setItem("user", JSON.stringify({ name, email, password }));
+      document.getElementById("message").textContent = "✅ Successfully registered! You can now log in.";
+      showForm("login");
+    });
+
+    // Handle login
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (user && user.email === email && user.password === password) {
+        document.getElementById("message").textContent = "✅ Login successful!";
+        // Redirect to dashboard here if needed
+      } else {
+        document.getElementById("message").textContent = "❌ Incorrect email or password.";
+      }
+    });
+
+    // Handle password reset
+    function resetPassword() {
+      const email = prompt("Enter your registered email to reset password:");
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (user && user.email === email) {
+        alert("✅ Password reset link has been sent to: " + email + " (mock example)");
+      } else {
+        alert("❌ No account found with that email.");
+      }
+    }
+  </script>
+
+</body>
+</html>
+    <h2>Welcome to Dashboard</h2>
+   <h2 id="trial-title">🎁 Free Trial: Convert up to 6 Images</h2>
+
+<form id="free-trial-form" enctype="multipart/form-data">
+  <label>Upload Images (Max 6):</label>
+  <input type="file" name="trial_images" multiple accept="image/*" required />
+  <label>Describe your video:</label>
+  <textarea name="trial_description" placeholder="Describe how your video should look..."></textarea>
+  <button type="submit">Generate!</button>
+</form>
+
+<div id="free-trial-status"></div>
+
+<!-- Hidden by default -->
+<div id="commission-section" style="display: none;">
+  <h2>💰 Paid Plans</h2>
+  <form id="upload-form" enctype="multipart/form-data">
+    <label>Upload Images:</label>
+    <input type="file" name="images" multiple accept="image/*" required />
+
+    <label>Describe your video:</label>
+    <textarea name="description" placeholder="Describe how your video should look..."></textarea>
+
+    <label>Choose Plan:</label>
+    <select name="commission_plan">
+      <option value="10etb">10 Images - 10 ETB</option>
+      <option value="200etb">Daily Unlimited - 200 ETB</option>
+      <option value="500etb">Monthly Unlimited - 500 ETB</option>
+    </select>
+
+    <label>Pay Using:</label>
+    <select name="payment">
+      <option value="cbe">CBE</option>
+      <option value="telebirr">Telebirr</option>
+    </select>
+
+    <label>Pay To (CBE or Telebirr Account Number):</label>
+    <input type="text" name="recipient_account" value="1000319689398" readonly />
+
+    <button type="submit">Convert Now</button>
+  </form>
+</div>
+
+  <label>Choose Plan:</label>
+    <select name="commission_plan">
+      <option value="5etb">6 Images - 5 ETB</option>
+      <option value="50etb">Daily Unlimited - 50 ETB</option>
+      <option value="500etb">Monthly Unlimited - 500 ETB</option>
+    </select>
+
+    <label>Pay Using:</label>
+    <select name="payment" id="payment-method" onchange="togglePaymentFields()">
+      <option value="">-- Select --</option>
+      <option value="cbe">CBE</option>
+      <option value="telebirr">Telebirr</option>
+    </select>
+
+    <div id="cbe-details" style="display: none;">
+      <label>CBE Card Number:</label>
+      <input type="text" name="cbe_card_number" value="1000319689398" />
+    </div>
+
+    <div id="telebirr-details" style="display: none;">
+      <label>Telebirr Phone Number:</label>
+      <input type="text" name="telebirr_phone" placeholder="0947741213" />
+    </div>
+</body>
+</html>
+<form id="upload-form" enctype="multipart/form-data">
+  <!-- Existing fields like images, description, plan -->
+  <label>Upload Payment Proof (screenshot or enter code):</label>
+  <input type="file" name="paymentProof" accept="image/*" />
+  <input type="text" name="transactionCode" placeholder="Or enter transaction code" />
+
+  <button type="submit">Submit for Verification</button>
+</form>
+
+<div id="status">
+  <p>🔍 Verifying payment using AI...</p>
+</div>
+<form id="upload-form" enctype="multipart/form-data">
+  <!-- Existing fields like images, description, plan -->
+  
+  </form>
+  <h2><!--Logout--> </h2>
+  <button onclick="logout()">Logout</button>
+  <h3><!--sentence--></h3>
+  <p style="color:blue;">All Right Is Reserved! 19 JUNE 2025</p>
+  <h3><!--paragraph--></h3>
+  <p style="color:green;">Set By ETHIO-TOP IMAGE TO VIDEO GENERATING.</p>
+
+
+  <div id="receipt-status" style="margin-top: 20px;">
+    <!-- AI receipt status goes here -->
+  </div>
+
+  <script>
+    function togglePaymentFields() {
+      const payment = document.getElementById("payment-method").value;
+      document.getElementById("cbe-details").style.display = payment === "cbe" ? "block" : "none";
+      document.getElementById("telebirr-details").style.display = payment === "telebirr" ? "block" : "none";
+    }
+
+    // Optional: Show data on submit to test
+    document.getElementById("upload-form").addEventListener("submit", function(e) {
+      e.preventDefault(); // prevent real submission for test
+      const formData = new FormData(this);
+      alert("Payment Method: " + formData.get("payment") +
+        "\nCBE Card: " + formData.get("cbe_card_number") +
+        "\nTelebirr Phone: " + formData.get("telebirr_phone"));
+    });
+  </script>
+
+</body>
+
+</html>
